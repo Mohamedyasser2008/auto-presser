@@ -1,47 +1,36 @@
 from pydirectinput import press
 from time import sleep
+from threading import Thread
 
-
-class Click():
-    def __init__(self, x):
-        """
-        This takes a string contains button name, time between each click and single or double click
-        Separated by spaces.
-        Ex: "capslock 20 yes"
-        yes can be replaced with (repeat, double, true, r, t, d, y)   Note:doesn't matter lower or upper case.
-        """
+class Clicker():
+    """
+    This class is used to simulate pressing buttons on keyboard.
+    This class takes 3 parameters:
+    1-but: button to press , 2-time: time between each press , 3-double: 1 or 2 clicks every ciycle (True is 2, False is 1)\n
+    To start clicking use method start() , To stop clicking use method stop()
+    Note: The parameter double is set by default to False 
+    """
+    def __init__(self, but:str, time:float, double=False):
+        self.but = but
+        self.time = time
+        self.double = double
 
         self.active = True
-
-        self.x = x.split(" ")
-        try:self.x[2] = (
-        self.x[2].lower() == "repeat" or 
-        self.x[2].lower() == "yes" or
-        self.x[2].lower() == "double" or 
-        self.x[2].lower() == "d" or 
-        self.x[2].lower() == "true" or 
-        self.x[2].lower() == "t" or 
-        self.x[2].lower() == "y" or 
-        self.x[2].lower() == "r"
-        )
-        except:pass
-
-        def clicker(button, timebet, double=False):
-            sleep(4)
-            if double:
-                while True:
-                    press(button)
-                    press(button)
-                    sleep(float(timebet))
-                    if not self.active:
-                        break
-                    
+        
+    def start(self) -> None:
+        def cc():
+            if self.double:
+                sleep(3.5)
+                while self.active:
+                    press(self.but)
+                    press(self.but)
+                    sleep(float(self.time))
             else:
-                while True:
-                    press(button)
-                    sleep(float(timebet))
-                    if not self.active:
-                        break
+                sleep(3.5)
+                while self.active:
+                    press(self.but)
+                    sleep(float(self.time))
+        Thread(target=cc).start()
 
-        try:clicker(self.x[0], self.x[1], self.x[2])
-        except:clicker(self.x[0], self.x[1])
+    def stop(self) -> None:
+        self.active = False
